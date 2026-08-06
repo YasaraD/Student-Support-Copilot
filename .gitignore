@@ -1,0 +1,29 @@
+# Python virtual environments
+.venv/
+venv/
+
+# Environment variables and secrets
+.env
+.env.*
+!.env.example
+
+# Python cache and generated files
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+
+# Streamlit local configuration
+.streamlit/secrets.toml
+
+# Local operating-system and editor files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Future locally generated project data
+data/*
+!data/.gitkeep
+documents/processed/*
+!documents/processed/.gitkeep
