@@ -22,7 +22,7 @@ Thumbs.db
 .vscode/
 .idea/
 
-# Future locally generated project data
+# Locally generated project data
 data/*
 !data/.gitkeep
 documents/processed/*

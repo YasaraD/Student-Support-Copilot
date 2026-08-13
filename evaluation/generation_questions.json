@@ -1,0 +1,57 @@
+[
+  {
+    "question": "I was sick and missed my exam. What should I do?",
+    "expected_source": "mock_examinations_policy.pdf",
+    "expected_fact": "Submit a mitigating-circumstances request within 5 working days and include appropriate medical evidence.",
+    "retrieved_sources": ["mock_examinations_policy.pdf — Page 2"],
+    "generated_answer": null,
+    "supported_by_evidence": null,
+    "unsupported_claims": null,
+    "correct_insufficient_evidence_handling": "Not applicable",
+    "validation_status": "Not run — GOOGLE_API_KEY was unavailable"
+  },
+  {
+    "question": "What happens if I fail a module?",
+    "expected_source": "mock_modules_handbook.pdf",
+    "expected_fact": "The student may need reassessment or a repeat attempt under module and programme rules.",
+    "retrieved_sources": ["mock_modules_handbook.pdf — Page 2"],
+    "generated_answer": null,
+    "supported_by_evidence": null,
+    "unsupported_claims": null,
+    "correct_insufficient_evidence_handling": "Not applicable",
+    "validation_status": "Not run — GOOGLE_API_KEY was unavailable"
+  },
+  {
+    "question": "I cannot access the student portal. Who should I contact?",
+    "expected_source": "mock_student_services_guide.pdf",
+    "expected_fact": "Contact the fictional IT Service Desk for account or portal access support.",
+    "retrieved_sources": ["mock_student_services_guide.pdf — Page 3"],
+    "generated_answer": null,
+    "supported_by_evidence": null,
+    "unsupported_claims": null,
+    "correct_insufficient_evidence_handling": "Not applicable",
+    "validation_status": "Not run — GOOGLE_API_KEY was unavailable"
+  },
+  {
+    "question": "What happens if I submit an assignment late?",
+    "expected_source": "mock_academic_regulations.pdf",
+    "expected_fact": "Work up to 24 hours late is capped at 40 percent; later work is normally a non-submission unless an exception applies.",
+    "retrieved_sources": ["mock_academic_regulations.pdf — Page 1"],
+    "generated_answer": null,
+    "supported_by_evidence": null,
+    "unsupported_claims": null,
+    "correct_insufficient_evidence_handling": "Not applicable",
+    "validation_status": "Not run — GOOGLE_API_KEY was unavailable"
+  },
+  {
+    "question": "What is tomorrow's cafeteria menu?",
+    "expected_source": null,
+    "expected_fact": null,
+    "retrieved_sources": [],
+    "generated_answer": null,
+    "supported_by_evidence": null,
+    "unsupported_claims": null,
+    "correct_insufficient_evidence_handling": null,
+    "validation_status": "Not run — GOOGLE_API_KEY was unavailable"
+  }
+]

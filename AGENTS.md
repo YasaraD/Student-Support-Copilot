@@ -659,6 +659,73 @@ Do not introduce Qdrant unless the project requires:
 
 Do not add multiple vector databases for experimentation during the initial version.
 
+## Selected Vector Store
+
+The initial vector store for the project is:
+
+`Chroma`
+
+Use the dedicated LangChain integration:
+
+`Chroma` from `langchain_chroma`.
+
+The vector store must run locally with persistent on-disk storage.
+
+Use:
+
+`data/chroma_db/`
+
+as the default persistence directory.
+
+The initial collection name is:
+
+`student_support_knowledge`
+
+Use the existing `BAAI/bge-m3` LangChain embedding model returned by the project's embedding module.
+
+Do not create a second embedding-model configuration inside the vector-store module.
+
+The vector store must contain:
+
+* the dense BGE-M3 embedding;
+* original chunk text;
+* chunk ID;
+* source filename;
+* page number;
+* category;
+* existing useful metadata.
+
+Use each chunk's deterministic `chunk_id` as its vector-store document ID where supported.
+
+Configure the initial Chroma collection to use cosine distance because the project uses normalized text embeddings and evaluates semantic similarity using cosine-style comparison.
+
+Use the current supported Chroma/LangChain configuration API. Do not use deprecated configuration parameters simply because they appear in older examples.
+
+The initial implementation must use local embedded Chroma only.
+
+Do not use:
+
+* Chroma Cloud;
+* a separate Chroma server;
+* Docker;
+* FAISS;
+* Qdrant;
+* another vector database.
+
+Provide explicit operations for:
+
+1. creating or opening the local vector store;
+2. indexing chunked LangChain Documents;
+3. checking stored document count;
+4. rebuilding the development vector store when source documents or embedding configuration change;
+5. reopening the persisted store without re-embedding all documents.
+
+Do not silently append duplicate chunks every time Streamlit reruns.
+
+Index construction must not happen automatically during every Streamlit rerun.
+
+Do not implement the retriever or student-question similarity search until the retrieval milestone.
+
 ---
 
 ## Retrieval Rules
@@ -685,6 +752,46 @@ Keep retrieval settings configurable, including:
 
 Do not assume that retrieving more chunks always improves the answer.
 
+## Selected Retrieval Strategy
+
+The initial retrieval strategy is dense semantic similarity retrieval using:
+
+- BAAI/bge-m3 query embeddings;
+- the existing persistent Chroma vector store;
+- cosine-based vector search;
+- LangChain retrieval interfaces.
+
+The initial retrieval configuration should use:
+
+TOP_K = 4
+
+Treat this value as an experimental starting point rather than an optimal setting.
+
+Student queries must use the same BAAI/bge-m3 embedding model used when indexing document chunks.
+
+Retrieval must be validated independently before connecting an LLM.
+
+The initial retrieval milestone must support:
+
+1. unfiltered similarity retrieval across the complete knowledge base;
+2. optional metadata filtering by one of the four project categories;
+3. returning original LangChain Document content and metadata;
+4. displaying retrieval scores or distances for development inspection when supported;
+5. preserving source, filename, page, category, and chunk_id;
+6. clear handling of an empty query;
+7. clear handling of a missing or empty vector store.
+
+Do not implement automatic category classification during the initial retrieval milestone.
+
+Do not implement query rewriting, reranking, MMR, hybrid retrieval, sparse retrieval, multi-query retrieval, or LLM-based retrieval during the initial retrieval milestone.
+
+Start with straightforward dense similarity search.
+
+Keep retrieval logic in `src/retriever.py`.
+
+Do not place retrieval logic directly inside `app.py`.
+
+Do not connect an LLM until retrieval has been manually and programmatically evaluated.
 ---
 
 ## LLM Rules
@@ -714,6 +821,27 @@ Do not connect the LLM before retrieval has been tested independently.
 Never hard-code the model API key.
 
 Keep the model name configurable through environment variables or a configuration module.
+
+## Selected LLM Architecture
+
+The initial answer-generation configuration is:
+
+```text
+Provider: Google Gemini Developer API
+Model: gemini-3.5-flash-lite
+LangChain package: langchain-google-genai
+LangChain interface: ChatGoogleGenerativeAI
+Architecture: 2-Step RAG
+```
+
+Use the existing BAAI/bge-m3 retriever, persistent Chroma store, and
+`TOP_K = 4`. Gemini is used only for answer generation, not embeddings or
+retrieval. Do not use Google File Search or send complete source PDFs to Gemini;
+send only the current student question and retrieved text chunks needed for that
+question.
+
+Do not introduce another LLM provider, conversation-aware RAG, or agents during
+this milestone.
 
 ---
 

@@ -1,0 +1,110 @@
+[
+  {
+    "id": "exam_missed_illness",
+    "query": "I was sick and missed my exam. What should I do?",
+    "supported": true,
+    "expected_category": "examinations",
+    "expected_source": "mock_examinations_policy.pdf",
+    "expected_topic": "absence due to illness and mitigating circumstances",
+    "question_type": "required example"
+  },
+  {
+    "id": "modules_failed",
+    "query": "What happens if I fail a module?",
+    "supported": true,
+    "expected_category": "modules",
+    "expected_source": "mock_modules_handbook.pdf",
+    "expected_topic": "failed modules and repeat attempts",
+    "question_type": "required example"
+  },
+  {
+    "id": "services_portal_access",
+    "query": "I cannot access the student portal. Who should I contact?",
+    "supported": true,
+    "expected_category": "student_services",
+    "expected_source": "mock_student_services_guide.pdf",
+    "expected_topic": "IT support for university accounts and systems",
+    "question_type": "required example"
+  },
+  {
+    "id": "regulations_late_assignment",
+    "query": "What happens if I submit an assignment late?",
+    "supported": true,
+    "expected_category": "academic_regulations",
+    "expected_source": "mock_academic_regulations.pdf",
+    "expected_topic": "late coursework submission rules",
+    "question_type": "required example"
+  },
+  {
+    "id": "services_library_borrowing",
+    "query": "How can I borrow books from the university library?",
+    "supported": true,
+    "expected_category": "student_services",
+    "expected_source": "mock_student_services_guide.pdf",
+    "expected_topic": "library borrowing",
+    "question_type": "required example"
+  },
+  {
+    "id": "exam_paraphrase",
+    "query": "An illness prevented me from sitting my scheduled test; what evidence and deadline apply?",
+    "supported": true,
+    "expected_category": "examinations",
+    "expected_source": "mock_examinations_policy.pdf",
+    "expected_topic": "medical evidence after examination absence",
+    "question_type": "category paraphrase"
+  },
+  {
+    "id": "modules_paraphrase",
+    "query": "May I enrol in an advanced class before finishing the required earlier class?",
+    "supported": true,
+    "expected_category": "modules",
+    "expected_source": "mock_modules_handbook.pdf",
+    "expected_topic": "module prerequisites",
+    "question_type": "category paraphrase"
+  },
+  {
+    "id": "services_paraphrase",
+    "query": "Where can I get confidential help for emotional wellbeing?",
+    "supported": true,
+    "expected_category": "student_services",
+    "expected_source": "mock_student_services_guide.pdf",
+    "expected_topic": "counselling and wellbeing support",
+    "question_type": "category paraphrase"
+  },
+  {
+    "id": "regulations_paraphrase",
+    "query": "Am I allowed to temporarily pause my degree for a year?",
+    "supported": true,
+    "expected_category": "academic_regulations",
+    "expected_source": "mock_academic_regulations.pdf",
+    "expected_topic": "suspension of studies",
+    "question_type": "category paraphrase"
+  },
+  {
+    "id": "regulations_different_wording",
+    "query": "What penalty applies when my coursework reaches the system the next day?",
+    "supported": true,
+    "expected_category": "academic_regulations",
+    "expected_source": "mock_academic_regulations.pdf",
+    "expected_topic": "late coursework submission rules",
+    "question_type": "different wording"
+  },
+  {
+    "id": "unsupported_cafeteria",
+    "query": "What is today's vegetarian menu in the campus cafeteria?",
+    "supported": false,
+    "expected_category": null,
+    "expected_source": null,
+    "expected_topic": null,
+    "question_type": "unsupported"
+  },
+  {
+    "id": "unsupported_parking",
+    "query": "Where can visitors park overnight and how much does it cost?",
+    "supported": false,
+    "expected_category": null,
+    "expected_source": null,
+    "expected_topic": null,
+    "question_type": "unsupported"
+  }
+]
