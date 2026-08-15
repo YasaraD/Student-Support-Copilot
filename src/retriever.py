@@ -9,6 +9,7 @@ from langchain_core.documents import Document
 from langchain_core.embeddings import Embeddings
 from langchain_core.retrievers import BaseRetriever
 
+from src.config import INDEX_CONFIG
 from src.embeddings import get_embedding_model
 from src.vector_store import (
     COLLECTION_NAME,
@@ -20,14 +21,9 @@ from src.vector_store import (
 )
 
 
-TOP_K = 4
-MAX_TOP_K = 8
-SUPPORTED_CATEGORIES = (
-    "examinations",
-    "modules",
-    "student_services",
-    "academic_regulations",
-)
+TOP_K = INDEX_CONFIG.top_k
+MAX_TOP_K = INDEX_CONFIG.max_top_k
+SUPPORTED_CATEGORIES = INDEX_CONFIG.supported_categories
 DISTANCE_DESCRIPTION = (
     "Raw cosine distance from Chroma; lower is a better match."
 )

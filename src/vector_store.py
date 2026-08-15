@@ -8,17 +8,17 @@ from langchain_chroma import Chroma
 from langchain_core.documents import Document
 from langchain_core.embeddings import Embeddings
 
+from src.config import INDEX_CONFIG
 from src.embeddings import get_embedding_model
 
 
-PROJECT_ROOT = Path(__file__).resolve().parents[1]
-DEFAULT_PERSIST_DIRECTORY = PROJECT_ROOT / "data" / "chroma_db"
-COLLECTION_NAME = "student_support_knowledge"
-DISTANCE_METRIC = "cosine"
+DEFAULT_PERSIST_DIRECTORY = INDEX_CONFIG.persist_directory
+COLLECTION_NAME = INDEX_CONFIG.collection_name
+DISTANCE_METRIC = INDEX_CONFIG.distance_metric
 COLLECTION_CONFIGURATION: CreateCollectionConfiguration = {
     "hnsw": {"space": DISTANCE_METRIC}
 }
-REQUIRED_CHUNK_METADATA = ("chunk_id", "source", "filename", "page", "category")
+REQUIRED_CHUNK_METADATA = INDEX_CONFIG.required_chunk_metadata
 
 
 class VectorStoreError(RuntimeError):

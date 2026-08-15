@@ -6,13 +6,10 @@ from langchain_community.document_loaders import PyPDFLoader
 from langchain_core.documents import Document
 from pypdf.errors import EmptyFileError, FileNotDecryptedError, PdfReadError
 
+from src.config import INDEX_CONFIG
 
-SUPPORTED_CATEGORIES = (
-    "examinations",
-    "modules",
-    "student_services",
-    "academic_regulations",
-)
+
+SUPPORTED_CATEGORIES = INDEX_CONFIG.supported_categories
 
 
 class DocumentLoaderError(Exception):

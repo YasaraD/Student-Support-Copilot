@@ -6,10 +6,11 @@ from math import isfinite
 from langchain_core.embeddings import Embeddings
 from langchain_huggingface import HuggingFaceEmbeddings
 
+from src.config import INDEX_CONFIG
 
-EMBEDDING_MODEL_NAME = "BAAI/bge-m3"
-EXPECTED_EMBEDDING_DIMENSION = 1024
-NORMALIZE_EMBEDDINGS = True
+EMBEDDING_MODEL_NAME = INDEX_CONFIG.embedding_model_name
+EXPECTED_EMBEDDING_DIMENSION = INDEX_CONFIG.embedding_dimension
+NORMALIZE_EMBEDDINGS = INDEX_CONFIG.normalize_embeddings
 
 
 class EmbeddingError(RuntimeError):

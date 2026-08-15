@@ -7,9 +7,10 @@ from pathlib import Path
 from langchain_core.documents import Document
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 
+from src.config import INDEX_CONFIG
 
-DEFAULT_CHUNK_SIZE = 800
-DEFAULT_CHUNK_OVERLAP = 120
+DEFAULT_CHUNK_SIZE = INDEX_CONFIG.chunk_size
+DEFAULT_CHUNK_OVERLAP = INDEX_CONFIG.chunk_overlap
 REQUIRED_METADATA_FIELDS = ("source", "filename", "page", "category")
 
 

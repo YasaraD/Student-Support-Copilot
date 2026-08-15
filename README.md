@@ -21,6 +21,8 @@ deterministic sources. It remains a student prototype, not an official service.
 - **Milestone 5 — Completed:** Persistent local Chroma vector store
 - **Milestone 6 — Completed:** Dense semantic retrieval and validation
 - **Milestone 7 — Completed:** Gemini integration and first 2-Step RAG pipeline
+- **Operational index management — Completed:** Central configuration, manifests,
+  document-change detection, safe staging rebuilds, and one-generation rollback
 
 ## Embeddings in Milestone 4
 
@@ -164,6 +166,64 @@ PDF
 explicitly when source PDFs change, chunk size/overlap changes, the embedding
 model changes, or the collection configuration changes. Opening the existing
 index does not re-embed or re-index documents.
+
+## Knowledge-index configuration and safe updates
+
+The knowledge index has two different kinds of configuration:
+
+- **Index-defining settings** determine stored chunks and vectors. These include
+  source categories, chunk size and overlap, embedding configuration, metadata
+  schema, collection name, and distance metric. Changing them requires a rebuild.
+- **Retrieval-time settings** control how an existing index is searched. For
+  example, changing `TOP_K` does not require re-embedding documents.
+
+`src/config.py` is the single source of these settings. Existing modules import
+their constants from `INDEX_CONFIG`, so document loading, splitting, embeddings,
+Chroma, and retrieval cannot silently use different defaults.
+
+### Index manifest
+
+After a successful rebuild, the project writes:
+
+```text
+data/chroma_db/index_manifest.json
+```
+
+The manifest is a machine-readable record of how the active index was produced.
+It contains:
+
+- a unique build identifier and UTC build time;
+- the complete index-defining configuration and its SHA-256 fingerprint;
+- each source PDF's category, relative path, size, and SHA-256 content hash;
+- document, page, and chunk counts;
+- chunk counts for all four categories.
+
+SHA-256 is used as a content fingerprint. Merely changing a file's timestamp does
+not trigger a rebuild, but adding, modifying, moving, or removing a PDF does.
+
+### Safe staging and rollback
+
+The rebuild command never appends directly to the active collection. It follows
+this process:
+
+```text
+Discover and hash source PDFs
+-> compare sources/settings with the active manifest
+-> load and split every approved PDF
+-> embed chunks into a uniquely named staging collection
+-> validate IDs, total count, and category coverage
+-> rename the active collection as the rollback generation
+-> promote staging as the active collection
+-> promote the new manifest
+```
+
+If loading, splitting, embedding, storage, or staging validation fails, the
+active collection is preserved. After a successful replacement, exactly one
+previous collection is retained for rollback. A later successful rebuild replaces
+that older rollback generation.
+
+This is a controlled full-rebuild workflow, not incremental indexing. Full
+rebuilds are simpler and safer for the project's current small document set.
 
 ## Retrieval in Milestone 6
 
@@ -492,6 +552,58 @@ python -m streamlit run app.py
 Streamlit normally opens `http://localhost:8501` in the default browser. Press
 `Ctrl+C` in PowerShell to stop it.
 
+## Managing the knowledge index
+
+Stop Streamlit before running rebuild or rollback commands. The local Chroma
+database should have only one administrative writer.
+
+### Check whether a rebuild is needed
+
+```powershell
+python scripts\rebuild_index.py status
+```
+
+This read-only command reports the active and rollback collection counts,
+manifest build ID, added/modified/removed documents, configuration changes, and
+whether a rebuild is required. It does not load BGE-M3.
+
+### Rebuild after changing documents or index settings
+
+```powershell
+python scripts\rebuild_index.py rebuild
+```
+
+Review the detected changes, then type `yes` when prompted. The first use of
+BGE-M3 may download the model; later runs reuse its Hugging Face disk cache but
+still load the model into memory for embedding.
+
+For a non-interactive terminal after reviewing `status`:
+
+```powershell
+python scripts\rebuild_index.py rebuild --yes
+```
+
+Use `--force` only when you intentionally want to rebuild even though document
+hashes and index-defining configuration are unchanged:
+
+```powershell
+python scripts\rebuild_index.py rebuild --force --yes
+```
+
+### Restore the previous index generation
+
+```powershell
+python scripts\rebuild_index.py rollback
+```
+
+After confirmation, active and backup collection names are swapped. The index
+being replaced becomes the new rollback generation, so the operation can be
+reversed by running rollback again. If the original collection predates manifest
+support, rolling back to it correctly reports that its manifest is unavailable.
+
+After rebuild or rollback, run `status`, restart Streamlit, and test known
+questions from all four categories.
+
 ## Using the chatbot
 
 1. Review the four supported knowledge areas on the main page.
@@ -547,6 +659,9 @@ student-support-copilot/
 |-- app.py
 |-- requirements.txt
 |-- .env.example
+|-- scripts/
+|   |-- __init__.py
+|   `-- rebuild_index.py
 |-- documents/
 |   |-- raw/
 |   |   |-- examinations/
@@ -556,10 +671,13 @@ student-support-copilot/
 |   `-- processed/
 |-- src/
 |   |-- __init__.py
+|   |-- config.py
 |   |-- document_loader.py
 |   |-- text_splitter.py
 |   |-- embeddings.py
 |   |-- vector_store.py
+|   |-- index_manifest.py
+|   |-- index_manager.py
 |   |-- retriever.py
 |   |-- prompts.py
 |   |-- llm.py
@@ -573,9 +691,12 @@ student-support-copilot/
 `-- tests/
     |-- __init__.py
     |-- test_document_loader.py
+    |-- test_config.py
     |-- test_text_splitter.py
     |-- test_embeddings.py
     |-- test_vector_store.py
+    |-- test_index_manifest.py
+    |-- test_index_manager.py
     |-- test_retriever.py
     |-- test_prompts.py
     |-- test_llm.py
@@ -591,7 +712,12 @@ student-support-copilot/
 - Password-protected, damaged, unsupported, and empty PDFs cannot be loaded.
 - Chunk size, overlap, and `TOP_K` remain experimental despite the small initial
   retrieval evaluation.
-- The local Chroma index is a development artifact and requires explicit rebuilds.
+- Knowledge-index updates use controlled full rebuilds; incremental per-document
+  updates are not implemented.
+- Exactly one previous collection is retained for rollback; this is not a full
+  backup history.
+- Streamlit must be stopped during rebuild and rollback because local embedded
+  Chroma is not an administrative multi-writer service.
 - Dense semantic retrieval returns nearest chunks but does not determine whether
   they contain enough evidence to answer a question.
 - Retrieval distances are raw diagnostic values, not confidence percentages.

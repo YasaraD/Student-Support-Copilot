@@ -726,6 +726,54 @@ Index construction must not happen automatically during every Streamlit rerun.
 
 Do not implement the retriever or student-question similarity search until the retrieval milestone.
 
+## Selected Index-Management Architecture
+
+Knowledge-index updates are explicit administrative operations and must not run
+automatically during Streamlit startup or reruns.
+
+Use `INDEX_CONFIG` from `src/config.py` as the single source of index-defining
+settings, including:
+
+* source-document directory and categories;
+* chunk size and overlap;
+* embedding model, dimension, and normalization;
+* Chroma persistence directory and collection name;
+* distance metric;
+* required chunk metadata and metadata-schema version;
+* default retrieval counts.
+
+The active index manifest is stored at:
+
+`data/chroma_db/index_manifest.json`
+
+It must record source-document SHA-256 fingerprints, index configuration,
+configuration fingerprint, build identifier, build time, page count, chunk
+count, and per-category chunk counts.
+
+Use the explicit command interface:
+
+```text
+python scripts/rebuild_index.py status
+python scripts/rebuild_index.py rebuild
+python scripts/rebuild_index.py rollback
+```
+
+A rebuild must:
+
+1. discover PDFs only inside the four configured category folders;
+2. validate that every required category has at least one PDF;
+3. compare source hashes and index-defining configuration with the manifest;
+4. load and split all documents using the central configuration;
+5. build a uniquely named staging Chroma collection;
+6. validate stored IDs, counts, and category coverage before promotion;
+7. retain the former active collection as one rollback generation;
+8. promote the manifest only after the collection is promoted;
+9. preserve the active collection when staging fails.
+
+Do not treat a file timestamp change alone as a document-content change. Do not
+silently append documents to the active collection. Stop Streamlit before
+rebuild or rollback so another process does not hold the local Chroma database.
+
 ---
 
 ## Retrieval Rules
